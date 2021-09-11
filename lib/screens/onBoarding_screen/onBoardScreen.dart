@@ -1,3 +1,4 @@
+import 'package:duemak_heard/constants.dart';
 import 'package:duemak_heard/screens/sign_in/sign_in_screen.dart';
 import 'package:duemak_heard/utilities/styles.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       height: 8.0,
       width: isActive ? 24.0 : 16.0,
       decoration: BoxDecoration(
-        color: isActive ? Colors.white : Color(0xFF7B51D3),
+        color: isActive ? kSecondaryColor : kTertiaryColor,
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
     );
@@ -66,12 +67,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: FlatButton(
                     onPressed: () => Navigator.pushReplacementNamed(
                         context, SignInScreen.id),
-                    /* () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SignInScreen(),
-                      ),
-                    ), */
                     child: Text(
                       'Skip',
                       style: TextStyle(
@@ -251,15 +246,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     builder: (context) => SignInScreen(),
                   ),
                 ),
-                /* () => print('Get started') */
                 child: Center(
                   child: Padding(
-                    padding: EdgeInsets.only(bottom: 30.0),
+                    padding: EdgeInsets.only(bottom: 20.0),
                     child: Text(
                       'Get started',
                       style: TextStyle(
                         color: Color(0xFF5B16D0),
-                        fontSize: 20.0,
+                        fontSize: 26.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

@@ -6,7 +6,10 @@ class Loading extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SafeArea(
       child: Scaffold(
-        body: SpinKitSpinningLines(color: Colors.black),
+        body: SpinKitSpinningLines(
+          color: Colors.black,
+          // duration: Duration(seconds: 10),
+        ),
       ),
     );
   }

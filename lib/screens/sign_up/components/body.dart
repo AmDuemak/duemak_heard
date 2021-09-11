@@ -2,7 +2,7 @@ import 'package:duemak_heard/components/custom_surfix_icon.dart';
 import 'package:duemak_heard/components/default_button.dart';
 import 'package:duemak_heard/components/form_error.dart';
 import 'package:duemak_heard/components/socal_card.dart';
-import 'package:duemak_heard/screens/sign_in/sign_in_screen.dart';
+import 'package:duemak_heard/screens/Home_screen/home.dart';
 import 'package:duemak_heard/utilities/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -92,21 +92,34 @@ class _BodyState extends State<Body> {
                                         email: email, password: password);
                                 await FirebaseAuth.instance.currentUser!
                                     .sendEmailVerification();
-                              } on FirebaseAuthException catch (e) {
-                                print(
-                                  e.toString(),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomePage(),
+                                  ),
                                 );
+                              } on FirebaseAuthException catch (e) {
+                                if (e.code == 'email-already-in-use') {
+                                  addError(
+                                      error:
+                                          "User with the email you provided exists");
+                                } else if (e.code == 'too-many-requests') {
+                                  addError(
+                                      error:
+                                          "Too many attempts. Try again later.");
+                                } else if (e.code == "network-request-failed") {
+                                  addError(
+                                      error: "Check your internet connection");
+                                } else {
+                                  addError(error: "an error occured");
+                                }
+                                print(e.toString());
                                 setState(() {
                                   loading = false;
                                 });
                               }
                               // if all are valid then go to success screen
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SignInScreen(),
-                                ),
-                              );
+
                             } else {
                               setState(() {
                                 loading = false;

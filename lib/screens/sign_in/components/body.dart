@@ -143,9 +143,29 @@ class _BodyState extends State<Body> {
                                   );
                                 }
                               } on FirebaseAuthException catch (e) {
+                                if (e.code == 'wrong-password') {
+                                  addError(
+                                      error: "email and password missmatch");
+                                } else if (e.code == 'user-not-found') {
+                                  addError(
+                                      error:
+                                          "We could not find an account that matches what you have entered.");
+                                } else if (e.code == 'too-many-requests') {
+                                  addError(
+                                      error:
+                                          "Too many attempts. Try again later.");
+                                } else if (e.code == "network-request-failed") {
+                                  addError(
+                                      error: "Check your internet connection");
+                                } else {
+                                  addError(error: "an error occured");
+                                }
                                 loading = false;
-                                print(e.toString());
+                                print(e);
                               }
+                              setState(() {
+                                loading = false;
+                              });
                             }
                           },
                         ),
@@ -204,7 +224,6 @@ class _BodyState extends State<Body> {
         focusedBorder: otpInputDecoration.focusedBorder,
         enabledBorder: otpInputDecoration.enabledBorder,
         errorBorder: otpInputDecoration.errorBorder,
-        
         focusedErrorBorder: otpInputDecoration.focusedErrorBorder,
         labelText: "Password",
         hintText: "Enter your password",

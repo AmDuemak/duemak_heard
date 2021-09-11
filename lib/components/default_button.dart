@@ -13,33 +13,21 @@ class DefaultButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20), color: kPrimaryColor),
       height: 56,
-      child: Container(
-        color: kPrimaryColor,
-        child: TextButton(
-          onPressed: press,
-          // style: ,
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
+      width: 0.8 * MediaQuery.of(context).size.width,
+      child: TextButton(
+        onPressed: press,
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 18,
+            color: Colors.white,
           ),
-          /* FlatButton(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          color: kPrimaryColor,
-          onPressed: press,
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),*/
         ),
+        
       ),
     );
   }

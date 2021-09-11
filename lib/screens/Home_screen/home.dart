@@ -13,6 +13,21 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool loading = false;
+  final List<String> errors = [];
+
+  void addError({String? error}) {
+    if (!errors.contains(error))
+      setState(() {
+        errors.add(error!);
+      });
+  }
+
+  void removeError({String? error}) {
+    if (errors.contains(error))
+      setState(() {
+        errors.remove(error);
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +79,13 @@ class _HomePageState extends State<HomePage> {
                           await FirebaseAuth.instance.signOut();
                           Navigator.pushReplacementNamed(
                               context, SignInScreen.id);
-                        } catch (e) {
-                          print("error occured");
+                        } on FirebaseException catch (e) {
+                          if (e.code == "network-request-failed") {
+                            addError(error: "Check your internet connection");
+                          } else {
+                            addError(error: "an error occured");
+                          }
+                          print(e.toString());
                           setState(() {
                             loading = false;
                           });

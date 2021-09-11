@@ -18,7 +18,21 @@ class _BodyState extends State<Body> {
   final _formKey = GlobalKey<FormState>();
   List<String> errors = [];
   late String email;
-  bool loading = true;
+  bool loading = false;
+
+  void addError({String? error}) {
+    if (!errors.contains(error))
+      setState(() {
+        errors.add(error!);
+      });
+  }
+
+  void removeError({String? error}) {
+    if (errors.contains(error))
+      setState(() {
+        errors.remove(error);
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +49,18 @@ class _BodyState extends State<Body> {
                     children: [
                       SizedBox(height: size.height * 0.04),
                       Text(
-                        "Forgot Password",
+                        "Account Recovery",
                         style: TextStyle(
                           fontSize: 28,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Text(
-                        "Please enter your email and we will send \nyou a link to return to your account",
+                        "Please enter your email and check your email for password recovery link",
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: size.height * 0.1),
@@ -121,12 +138,22 @@ class _BodyState extends State<Body> {
                                         builder: (context) => SignInScreen(),
                                       ),
                                     );
-                                  } catch (e) {
-                                    print("error occured");
+                                  } on FirebaseException catch (e) {
+                                    if (e.code == "network-request-failed") {
+                                      addError(
+                                          error:
+                                              "Check your internet connection");
+                                    } else {
+                                      addError(error: "an error occured");
+                                    }
+                                    print(e);
                                     setState(() {
                                       loading = false;
                                     });
                                   }
+                                  setState(() {
+                                    loading = false;
+                                  });
                                 }
                               },
                             ),
