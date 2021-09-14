@@ -22,6 +22,7 @@ class _BodyState extends State<Body> {
   late String password;
   bool remember = false;
   bool loading = false;
+  late String messo;
 
   final List<String> errors = [];
 
@@ -144,22 +145,27 @@ class _BodyState extends State<Body> {
                                 }
                               } on FirebaseAuthException catch (e) {
                                 if (e.code == 'wrong-password') {
-                                  addError(
-                                      error: "email and password missmatch");
+                                  messo =
+                                      "Invalid email or password. Please check and try again.";
+                                  MyDialog(context);
                                 } else if (e.code == 'user-not-found') {
-                                  addError(
-                                      error:
-                                          "We could not find an account that matches what you have entered.");
+                                  messo =
+                                      "We could not find any user with the Email you provided. Check and try again.";
+                                  MyDialog(context);
                                 } else if (e.code == 'too-many-requests') {
-                                  addError(
-                                      error:
-                                          "Too many attempts. Try again later.");
+                                  messo = "Too many attempts. Try again later.";
+                                  // addError(error: messo);
+                                  MyDialog(context);
                                 } else if (e.code == "network-request-failed") {
-                                  addError(
-                                      error: "Check your internet connection");
+                                  messo = "Check your internet connection";
+                                  // addError(error: messo);
+                                  MyDialog(context);
                                 } else {
-                                  addError(error: "an error occured");
+                                  messo = "an error occured";
+                                  addError(error: messo);
+                                  MyDialog(context);
                                 }
+
                                 loading = false;
                                 print(e);
                               }
@@ -195,6 +201,24 @@ class _BodyState extends State<Body> {
                 ),
               ),
             ),
+    );
+  }
+
+  // ignore: non_constant_identifier_names
+  Future<dynamic> MyDialog(BuildContext context) {
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text("Signing In error"),
+        content: Text(messo),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 

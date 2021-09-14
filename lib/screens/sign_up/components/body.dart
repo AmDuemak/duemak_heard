@@ -22,6 +22,7 @@ class _BodyState extends State<Body> {
   bool loading = false;
   late String conformPassword;
   bool remember = false;
+  late String messo;
 
   final List<String> errors = [];
 
@@ -100,18 +101,18 @@ class _BodyState extends State<Body> {
                                 );
                               } on FirebaseAuthException catch (e) {
                                 if (e.code == 'email-already-in-use') {
-                                  addError(
-                                      error:
-                                          "User with the email you provided exists");
+                                  messo =
+                                      "User with the email you provided exists";
+                                  MyDialog(context);
                                 } else if (e.code == 'too-many-requests') {
-                                  addError(
-                                      error:
-                                          "Too many attempts. Try again later.");
+                                  messo = "Too many attempts. Try again later.";
+                                  MyDialog(context);
                                 } else if (e.code == "network-request-failed") {
-                                  addError(
-                                      error: "Check your internet connection");
+                                  messo = "Check your internet connection";
+                                  MyDialog(context);
                                 } else {
-                                  addError(error: "an error occured");
+                                  messo = "an error occured";
+                                  MyDialog(context);
                                 }
                                 print(e.toString());
                                 setState(() {
@@ -159,6 +160,24 @@ class _BodyState extends State<Body> {
                 ),
               ),
             ),
+    );
+  }
+
+  // ignore: non_constant_identifier_names
+  Future<dynamic> MyDialog(BuildContext context) {
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text("Signing Up error"),
+        content: Text(messo),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 
