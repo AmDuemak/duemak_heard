@@ -1,6 +1,7 @@
 import 'package:duemak_heard/constants.dart';
 import 'package:duemak_heard/screens/sign_in/sign_in_screen.dart';
 import 'package:duemak_heard/utilities/loading.dart';
+import 'package:duemak_heard/utilities/record.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool loading = false;
   final List<String> errors = [];
+  final recorder = SoundRecorder();
+  // bool isRecording = recorder.isRecording;
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -30,7 +33,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    recorder.init();
+  }
+
+  @override
+  void dispose() {
+    recorder.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    bool isRecording = recorder.isRecording;
     return SafeArea(
       child: loading
           ? Loading()
@@ -77,25 +95,63 @@ class _HomePageState extends State<HomePage> {
                             loading = true;
                           });
                           await FirebaseAuth.instance.signOut();
-                          Navigator.pushReplacementNamed(
-                              context, SignInScreen.id);
                         } on FirebaseException catch (e) {
+                          String messo = "network-request-failed";
                           if (e.code == "network-request-failed") {
-                            addError(error: "Check your internet connection");
+                            myDialog(context, messo);
                           } else {
-                            addError(error: "an error occured");
+                            messo = "an error occured";
+                            myDialog(context, messo);
                           }
                           print(e.toString());
                           setState(() {
                             loading = false;
                           });
+                          
                         }
+                        Navigator.pushReplacementNamed(
+                              context, SignInScreen.id);
                       },
                     ),
                   ],
                 ),
               ),
+              body: SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: SingleChildScrollView(
+                    child: Column(),
+                  ),
+                ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () async {
+                  await recorder.toggleRecorder();
+                  setState(() {});
+                },
+                child: isRecording
+                    ? Icon(Icons.mic_rounded)
+                    : Icon(Icons.mic_off_rounded),
+              ),
             ),
+    );
+  }
+
+  Future<dynamic> myDialog(BuildContext context, String messo) {
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text("Signing In error"),
+        content: Text(messo),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 }
