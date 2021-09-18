@@ -1,7 +1,13 @@
-import 'package:flutter_sound_lite/flutter_sound.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
 
-final duemakFile = "example.aac";
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+
+late final Directory appDirectory;
+String appPath = appDirectory.path;
+final duemakFile =
+    appPath + "/" + DateTime.now().millisecondsSinceEpoch.toString() + ".aac";
 
 class SoundRecorder {
   FlutterSoundRecorder? _audioRecorder;
@@ -9,6 +15,7 @@ class SoundRecorder {
   bool get isRecording => _audioRecorder!.isRecording;
 
   Future init() async {
+    getApplicationDocumentsDirectory().then((value) => appDirectory = value);
     _audioRecorder = FlutterSoundRecorder();
 
     final status = await Permission.microphone.request();
