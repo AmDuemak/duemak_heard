@@ -31,3 +31,19 @@ class UploadRecording {
   }
 }
  */
+
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
+
+Future<void> UploadFile(String filePath) async {
+  final ref = FirebaseStorage.instance.ref("myFile");
+
+  try {
+    await ref
+        .child(filePath.substring(filePath.lastIndexOf('/'), filePath.length))
+        .putFile(File(filePath));
+  } on FirebaseException catch (error) {
+    print('Error occured while uplaoding to Firebase ${error.toString()}');
+  }
+}

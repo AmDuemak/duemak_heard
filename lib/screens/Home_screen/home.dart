@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:duemak_heard/constants.dart';
-import 'package:duemak_heard/screens/sign_in/sign_in_screen.dart';
+import 'package:duemak_heard/screens/Home_screen/my_drawer.dart';
+import 'package:duemak_heard/utilities/detele_file.dart';
 import 'package:duemak_heard/utilities/loading.dart';
 import 'package:duemak_heard/utilities/record.dart';
+import 'package:duemak_heard/utilities/upload.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +20,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool loading = false;
+  bool isUploading = false;
   final List<String> errors = [];
   final recorder = SoundRecorder();
-  late List<String> records;
+  late List records;
   late Directory appDirectory;
   int _selectedIndex = -1;
   late int _totalDuration;
@@ -65,7 +68,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     recorder.dispose();
-    appDirectory.delete();
+    // appDirectory.delete();
     super.dispose();
   }
 
@@ -79,69 +82,10 @@ class _HomePageState extends State<HomePage> {
               appBar: AppBar(
                 backgroundColor: kPrimaryColor,
               ),
-              drawer: Drawer(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: <Widget>[
-                    DrawerHeader(
-                      decoration: BoxDecoration(
-                        color: kPrimaryColor,
-                      ),
-                      child: Text(
-                        'Drawer Header',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.message),
-                      title: Text('Messages'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.account_circle),
-                      title: Text('Profile'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.settings),
-                      title: Text('Settings'),
-                    ),
-                    GestureDetector(
-                      child: ListTile(
-                        leading: Icon(Icons.logout),
-                        title: Text('Logout'),
-                      ),
-                      onTap: () async {
-                        try {
-                          setState(() {
-                            loading = true;
-                          });
-                          await FirebaseAuth.instance.signOut();
-                        } on FirebaseException catch (e) {
-                          String messo = "network-request-failed";
-                          if (e.code == "network-request-failed") {
-                            myDialog(context, messo);
-                          } else {
-                            messo = "an error occured";
-                            myDialog(context, messo);
-                          }
-                          print(e.toString());
-                          setState(() {
-                            loading = false;
-                          });
-                        }
-                        Navigator.pushReplacementNamed(
-                            context, SignInScreen.id);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              body: FutureBuilder(
-                  future: null,
-                  builder: (BuildContext context, snapshot) {
-                    return ListView.builder(
+              drawer: MyDrawer(),
+              body: isUploading
+                  ? Loading()
+                  : ListView.builder(
                       itemCount: records.length,
                       shrinkWrap: true,
                       reverse: true,
@@ -154,8 +98,23 @@ class _HomePageState extends State<HomePage> {
                                 color: kSecondaryColor,
                                 borderRadius: BorderRadius.circular(10)),
                             child: ExpansionTile(
+                              leading: IconButton(
+                                onPressed: () async {
+                                  try {
+                                    await deleteFile(
+                                      File(records.elementAt(i)),
+                                      context,
+                                    );
+                                    print("success");
+                                  } catch (e) {
+                                    print(e.toString());
+                                    print(records.elementAt(i));
+                                  }
+                                },
+                                icon: Icon(Icons.delete_forever),
+                              ),
                               title: Text("New recoding ${records.length - i}"),
-                              subtitle: Text(getDateFromFilePatah(
+                              subtitle: Text(getDateFromFile(
                                   filePath: records.elementAt(i))),
                               onExpansionChanged: ((newState) {
                                 if (newState) {
@@ -170,6 +129,8 @@ class _HomePageState extends State<HomePage> {
                                   height: 100,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
                                     children: [
                                       LinearProgressIndicator(
                                         minHeight: 5,
@@ -190,7 +151,8 @@ class _HomePageState extends State<HomePage> {
                                                 iconSize: 30,
                                                 icon: Icon(Icons.stop),
                                                 onPressed: () {
-                                                  AudioPlayer().stop();
+                                                  AudioPlayer().setReleaseMode(
+                                                      ReleaseMode.STOP);
                                                   setState(() {
                                                     _isPlaying = false;
                                                   });
@@ -211,7 +173,9 @@ class _HomePageState extends State<HomePage> {
                                                 iconSize: 30,
                                                 icon: Icon(Icons.pause),
                                                 onPressed: () {
-                                                  AudioPlayer().pause();
+                                                  AudioPlayer().setReleaseMode(
+                                                      ReleaseMode.RELEASE);
+                                                  // AudioPlayer().pause();
                                                   setState(() {
                                                     _isPlaying = false;
                                                   });
@@ -227,20 +191,33 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       },
-                    );
-                  }),
+                    ),
               bottomNavigationBar: BottomNavigationBar(
+                backgroundColor: kPrimaryColor,
                 currentIndex: 1,
                 items: [
                   BottomNavigationBarItem(
                     label: "Upload to cloud",
                     icon: IconButton(
-                      onPressed: () async {
-                        await () {};
-                        print("Upload pressed");
-                      },
-                      icon: Icon(Icons.cloud_upload),
-                    ),
+                        onPressed: () async {
+                          setState(() {
+                            isUploading = true;
+                          });
+                          for (int f = 0; f < records.length; f++) {
+                            try {
+                              await UploadFile(records.elementAt(f).toString());
+                            } on FirebaseException catch (e) {
+                              print(e.toString());
+                              setState(() {
+                                isUploading = false;
+                              });
+                            }
+                          }
+                          setState(() {
+                            isUploading = false;
+                          });
+                        },
+                        icon: Icon(Icons.cloud_upload)),
                   ),
                   BottomNavigationBarItem(
                     label: "HOME",
@@ -250,7 +227,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   BottomNavigationBarItem(
-                    label: "Start OR Stop",
+                    label: isRecording ? "Close MIC" : "Open MIC",
                     icon: IconButton(
                       onPressed: () async {
                         await recorder.toggleRecorder();
@@ -267,21 +244,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<dynamic> myDialog(BuildContext context, String messo) {
-    return showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text("Signing In error"),
-        content: Text(messo),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'OK'),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
+  UpdateData() async {
+    appDirectory = await getApplicationDocumentsDirectory();
+    appDirectory.list().listen((event) {
+      if (event.path.contains(".aac")) {
+        records.add(event.path);
+      }
+    });
   }
 
   Future<void> _onPlay({required String filePath, required int index}) async {
@@ -302,28 +271,25 @@ class _HomePageState extends State<HomePage> {
         });
       });
 
-      audioPlayer.onAudioPositionChanged.listen((duration) {
-        setState(() {
-          _totalDuration = duration.inMicroseconds;
-        });
-      });
-
-      audioPlayer.onAudioPositionChanged.listen((duration) {
-        setState(() {
-          _currentDuration = duration.inMicroseconds;
-          _completedPercentage =
-              _currentDuration.toDouble() / _totalDuration.toDouble();
-        });
-      });
+      audioPlayer.onAudioPositionChanged.listen(
+        (duration) {
+          setState(() {
+            _totalDuration = audioPlayer.getDuration() as int;
+            _currentDuration = duration.inMicroseconds;
+            _completedPercentage =
+                _currentDuration.toDouble() / _totalDuration.toDouble();
+          });
+        },
+      );
     }
   }
 
-  String getDateFromFilePatah({required String filePath}) {
-    String fromEpoch = filePath.substring(
+  String getDateFromFile({required String filePath}) {
+    String fromFile = filePath.substring(
         filePath.lastIndexOf('/') + 1, filePath.lastIndexOf('.'));
 
     DateTime recordedDate =
-        DateTime.fromMillisecondsSinceEpoch(int.parse(fromEpoch));
+        DateTime.fromMillisecondsSinceEpoch(int.parse(fromFile));
     int year = recordedDate.year;
     int month = recordedDate.month;
     int day = recordedDate.day;

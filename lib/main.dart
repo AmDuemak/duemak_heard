@@ -29,7 +29,6 @@ class MyApp extends StatelessWidget {
         SignUpScreen.id: (context) => SignUpScreen(),
         HomePage.id: (context) => HomePage(),
         ForgotPasswordScreen.id: (context) => ForgotPasswordScreen(),
-        // AppDrawer.id: (context) => AppDrawer(),
       },
     );
   }

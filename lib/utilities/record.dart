@@ -8,6 +8,7 @@ late final Directory appDirectory;
 String appPath = appDirectory.path;
 final duemakFile =
     appPath + "/" + DateTime.now().millisecondsSinceEpoch.toString() + ".aac";
+File record = duemakFile as File;
 
 class SoundRecorder {
   FlutterSoundRecorder? _audioRecorder;
@@ -49,6 +50,8 @@ class SoundRecorder {
       await _record();
     } else {
       await _stopRecord();
+
+      //       .then((value) => UploadFile(onUploadComplete: deleteFile(record)));
     }
   }
 }
