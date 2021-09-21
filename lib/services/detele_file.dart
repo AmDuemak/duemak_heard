@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:duemak_heard/utilities/my_dialog.dart';
+import 'package:duemak_heard/models/my_dialog.dart';
 import 'package:flutter/material.dart';
 
 Future<void> deleteFile(
@@ -18,6 +18,8 @@ Future<void> deleteFile(
       try {
         if (await file.exists()) {
           await file.delete();
+          print("deleted successifully");
+          
         }
         Navigator.pop(context, 'OK');
       } catch (e) {

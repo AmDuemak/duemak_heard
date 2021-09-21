@@ -4,6 +4,7 @@ import 'package:duemak_heard/components/form_error.dart';
 import 'package:duemak_heard/components/socal_card.dart';
 import 'package:duemak_heard/screens/Home_screen/home.dart';
 import 'package:duemak_heard/utilities/loading.dart';
+import 'package:duemak_heard/models/user_from_firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +20,11 @@ class _BodyState extends State<Body> {
 
   late String email;
   late String password;
+  late String fname;
+  late String lname;
+  late String phone;
+  late String userName;
+
   bool loading = false;
   late String conformPassword;
   bool remember = false;
@@ -65,6 +71,14 @@ class _BodyState extends State<Body> {
                           key: _formKey,
                           child: Column(
                             children: [
+                              buildNameFormField(),
+                              SizedBox(height: 30),
+                              buildNameFormField2(),
+                              SizedBox(height: 30),
+                              buildUsernameFormField(),
+                              SizedBox(height: 30),
+                              buildPhoneFormField(),
+                              SizedBox(height: 30),
                               buildEmailFormField(),
                               SizedBox(height: 30),
                               buildPasswordFormField(),
@@ -93,6 +107,8 @@ class _BodyState extends State<Body> {
                                         email: email, password: password);
                                 await FirebaseAuth.instance.currentUser!
                                     .sendEmailVerification();
+
+                                await userSetup(fname, lname, userName, phone);
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -286,6 +302,122 @@ class _BodyState extends State<Body> {
         hintText: "Enter your email",
         floatingLabelBehavior: FloatingLabelBehavior.always,
         suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
+      ),
+    );
+  }
+
+  TextFormField buildNameFormField() {
+    return TextFormField(
+      keyboardType: TextInputType.name,
+      onSaved: (newValue) => fname = newValue!,
+      onChanged: (value) {
+        fname = value;
+        return null;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: "Name can't be empty");
+          return "";
+        }
+
+        return null;
+      },
+      decoration: InputDecoration(
+        focusedBorder: otpInputDecoration.focusedBorder,
+        enabledBorder: otpInputDecoration.enabledBorder,
+        errorBorder: otpInputDecoration.errorBorder,
+        focusedErrorBorder: otpInputDecoration.focusedErrorBorder,
+        labelText: "First Name",
+        hintText: "Enter your First Name",
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
+      ),
+    );
+  }
+
+  TextFormField buildNameFormField2() {
+    return TextFormField(
+      keyboardType: TextInputType.name,
+      onSaved: (newValue) => lname = newValue!,
+      onChanged: (value) {
+        lname = value;
+        return null;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: "Name can't be empty");
+          return "";
+        }
+
+        return null;
+      },
+      decoration: InputDecoration(
+        focusedBorder: otpInputDecoration.focusedBorder,
+        enabledBorder: otpInputDecoration.enabledBorder,
+        errorBorder: otpInputDecoration.errorBorder,
+        focusedErrorBorder: otpInputDecoration.focusedErrorBorder,
+        labelText: "Last Name",
+        hintText: "Enter your Last Name",
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
+      ),
+    );
+  }
+
+  TextFormField buildPhoneFormField() {
+    return TextFormField(
+      keyboardType: TextInputType.number,
+      onSaved: (newValue) => phone = newValue!,
+      onChanged: (value) {
+        phone = value;
+        return null;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: "Phone number can't be empty");
+          return "";
+        }
+
+        return null;
+      },
+      decoration: InputDecoration(
+        focusedBorder: otpInputDecoration.focusedBorder,
+        enabledBorder: otpInputDecoration.enabledBorder,
+        errorBorder: otpInputDecoration.errorBorder,
+        focusedErrorBorder: otpInputDecoration.focusedErrorBorder,
+        labelText: "Phone Number",
+        hintText: "Enter your Phone Number",
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg"),
+      ),
+    );
+  }
+
+  TextFormField buildUsernameFormField() {
+    return TextFormField(
+      keyboardType: TextInputType.text,
+      onSaved: (newValue) => userName = "@" + newValue!,
+      onChanged: (value) {
+        userName = "@" + value;
+        return null;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: "Username can't be empty");
+          return "";
+        }
+
+        return null;
+      },
+      decoration: InputDecoration(
+        focusedBorder: otpInputDecoration.focusedBorder,
+        enabledBorder: otpInputDecoration.enabledBorder,
+        errorBorder: otpInputDecoration.errorBorder,
+        focusedErrorBorder: otpInputDecoration.focusedErrorBorder,
+        labelText: "Username",
+        hintText: "Enter your Unique username",
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User Icon.svg"),
       ),
     );
   }
