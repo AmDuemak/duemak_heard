@@ -7,6 +7,7 @@ import 'package:duemak_heard/services/detele_file.dart';
 import 'package:duemak_heard/utilities/loading.dart';
 import 'package:duemak_heard/services/record.dart';
 import 'package:duemak_heard/services/upload.dart';
+import 'package:duemak_heard/utilities/popup_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +25,8 @@ class _HomePageState extends State<HomePage> {
   bool isUploading = false;
   final List<String> errors = [];
   final recorder = SoundRecorder();
+
   late List records;
-  late Directory appDirectory;
   int _selectedIndex = -1;
   late int _totalDuration;
   late int _currentDuration;
@@ -98,7 +99,8 @@ class _HomePageState extends State<HomePage> {
                       setState(() {});
                     },
                     icon: Icon(Icons.sync),
-                  )
+                  ),
+                  ThePopupMneu(),
                 ],
               ),
               drawer: MyDrawer(),
@@ -161,13 +163,13 @@ class _HomePageState extends State<HomePage> {
                                         children: [
                                           LinearProgressIndicator(
                                             minHeight: 2,
-                                            backgroundColor: Colors.black,
+                                            backgroundColor: Colors.grey,
                                             valueColor:
                                                 AlwaysStoppedAnimation<Color>(
                                                     kPrimaryColor),
                                             value: _selectedIndex == i
                                                 ? _completedPercentage
-                                                : 0,
+                                                : 0.0,
                                           ),
                                           Row(
                                             mainAxisAlignment:
@@ -177,8 +179,9 @@ class _HomePageState extends State<HomePage> {
                                                 child: IconButton(
                                                     iconSize: 30,
                                                     icon: Icon(Icons.stop),
-                                                    onPressed: () {
-                                                      AudioPlayer().stop();
+                                                    onPressed: () async {
+                                                      await AudioPlayer()
+                                                          .stop();
                                                       setState(() {
                                                         _isPlaying = false;
                                                         _completedPercentage =
@@ -200,8 +203,9 @@ class _HomePageState extends State<HomePage> {
                                                 child: IconButton(
                                                     iconSize: 30,
                                                     icon: Icon(Icons.pause),
-                                                    onPressed: () {
-                                                      AudioPlayer().pause();
+                                                    onPressed: () async {
+                                                      await AudioPlayer()
+                                                          .pause();
                                                       setState(() {
                                                         _isPlaying = false;
                                                       });
@@ -249,7 +253,14 @@ class _HomePageState extends State<HomePage> {
                   BottomNavigationBarItem(
                     label: "HOME",
                     icon: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomePage(),
+                          ),
+                        );
+                      },
                       icon: Icon(Icons.home_outlined),
                     ),
                   ),
@@ -276,9 +287,6 @@ class _HomePageState extends State<HomePage> {
     appDirectory.list();
   }
 
-//
-
-//
   Future<void> _onPlay({required String filePath, required int index}) async {
     AudioPlayer audioPlayer = AudioPlayer();
 
@@ -297,10 +305,15 @@ class _HomePageState extends State<HomePage> {
         });
       });
 
+      audioPlayer.onDurationChanged.listen((Maxd) {
+        setState(() {
+          _totalDuration = Maxd.inSeconds;
+        });
+      });
+
       audioPlayer.onAudioPositionChanged.listen(
-        (duration) {
+        (Duration duration) {
           setState(() {
-            _totalDuration = audioPlayer.getDuration() as int;
             _currentDuration = duration.inMicroseconds;
             _completedPercentage =
                 _currentDuration.toDouble() / _totalDuration.toDouble();

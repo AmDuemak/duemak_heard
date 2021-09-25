@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:duemak_heard/models/my_dialog.dart';
+import 'package:duemak_heard/screens/online_files/online_stream.dart';
 import 'package:duemak_heard/screens/sign_in/sign_in_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 
 class MyDrawer extends StatefulWidget {
   @override
@@ -92,7 +95,14 @@ class _MyDrawerState extends State<MyDrawer> {
                         child: InkWell(
                           splashColor: Theme.of(context).splashColor,
                           child: ListTile(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => OnlineAudio(),
+                                ),
+                              );
+                            },
                             title: Text(
                               'Synced Data',
                               style: TextStyle(
@@ -151,16 +161,27 @@ class _MyDrawerState extends State<MyDrawer> {
                         child: InkWell(
                           splashColor: Theme.of(context).splashColor,
                           onTap: () {
-                            try {
-                              FirebaseAuth.instance.signOut();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SignInScreen()),
-                              );
-                            } on FirebaseAuthException catch (e) {
-                              print(e);
-                            }
+                            myDialog(
+                              context,
+                              "Backup all your Data first. \nAll your recordings will be lost should you proceed",
+                              "Warning",
+                              () => Navigator.pop(context, 'OK'),
+                              () async {
+                                try {
+                                  await FirebaseAuth.instance.signOut();
+                                  await _deleteAppDir();
+                                } on FirebaseAuthException catch (e) {
+                                  print(e.toString());
+                                } catch (e) {
+                                  print(e.toString());
+                                }
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SignInScreen()),
+                                );
+                              },
+                            );
                           },
                           child: ListTile(
                             leading: Icon(
@@ -226,5 +247,27 @@ class _MyDrawerState extends State<MyDrawer> {
         ),
       ),
     );
+  }
+
+  /// this will delete cache
+  Future<void> _deleteCacheDir() async {
+    final cacheDir = await getTemporaryDirectory();
+
+    if (cacheDir.existsSync()) {
+      cacheDir.deleteSync(recursive: true);
+    }
+  }
+
+  /// this will delete app's storage
+  Future<void> _deleteAppDir() async {
+    final appDir = await getApplicationDocumentsDirectory();
+
+    if (appDir.existsSync()) {
+      try {
+        appDir.deleteSync(recursive: true);
+      } catch (e) {
+        print(e.toString());
+      }
+    }
   }
 }

@@ -16,7 +16,6 @@ Future<dynamic> myDialog(BuildContext context, String messo, String title,
         ),
         TextButton(
           onPressed: press1,
-          /*  () => Navigator.pop(context, 'OK'), */
           child: const Text('OK'),
         )
       ],
