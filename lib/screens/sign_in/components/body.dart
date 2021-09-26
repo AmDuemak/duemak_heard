@@ -130,7 +130,7 @@ class _BodyState extends State<Body> {
                                         email: email, password: password);
 
                                 if (FirebaseAuth.instance.currentUser != null) {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => HomePage()),

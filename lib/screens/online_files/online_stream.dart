@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:duemak_heard/constants.dart';
+import 'package:duemak_heard/models/my_dialog.dart';
 import 'package:duemak_heard/screens/Home_screen/home.dart';
 import 'package:duemak_heard/utilities/popup_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -100,18 +101,29 @@ class _OnlineAudioState extends State<OnlineAudio> {
                     itemBuilder: (BuildContext context, int index) {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: kSecondaryColor,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: ListTile(
-                            title: Text(references.elementAt(index).name),
-                            trailing: IconButton(
-                              icon: selectedIndex == index
-                                  ? Icon(Icons.pause)
-                                  : Icon(Icons.play_arrow),
-                              onPressed: () => _onListTileButtonPressed(index),
+                        child: GestureDetector(
+                          onLongPress: () {
+                            myDialog(
+                                context,
+                                "Are you sure you want to delete this file?",
+                                "Confirm",
+                                () => Navigator.pop(context, 'OK'),
+                                () { });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: kSecondaryColor,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: ListTile(
+                              title: Text(references.elementAt(index).name),
+                              trailing: IconButton(
+                                icon: selectedIndex == index
+                                    ? Icon(Icons.pause)
+                                    : Icon(Icons.play_arrow),
+                                onPressed: () =>
+                                    _onListTileButtonPressed(index),
+                              ),
                             ),
                           ),
                         ),

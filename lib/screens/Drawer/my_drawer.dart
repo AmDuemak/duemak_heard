@@ -18,7 +18,6 @@ class _MyDrawerState extends State<MyDrawer> {
   static String lname = "";
   static String phone = "";
   static String username = "";
-  static String fullNames = "";
 
   @override
   build(BuildContext context) {
@@ -39,7 +38,7 @@ class _MyDrawerState extends State<MyDrawer> {
             phone = data.docs[0]["Phone Number"];
             username = data.docs[0]["Username"];
             fname = data.docs[0]["First Name"];
-            fullNames = " $fname   $lname";
+            // fullNames = " $fname   $lname";
           });
           return Container(
             child: Padding(
@@ -61,11 +60,22 @@ class _MyDrawerState extends State<MyDrawer> {
                           Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  fullNames,
-                                  style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold),
+                                Wrap(
+                                  direction: Axis.vertical,
+                                  children: [
+                                    Text(
+                                      fname,
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      lname,
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(
                                   height: 5,
@@ -170,6 +180,7 @@ class _MyDrawerState extends State<MyDrawer> {
                                 try {
                                   await FirebaseAuth.instance.signOut();
                                   await _deleteAppDir();
+                                  await _deleteCacheDir();
                                 } on FirebaseAuthException catch (e) {
                                   print(e.toString());
                                 } catch (e) {

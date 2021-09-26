@@ -12,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 class HomePage extends StatefulWidget {
   static const String id = "home";
@@ -141,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                                     icon: Icon(Icons.delete_forever),
                                   ),
                                   title: Text(
-                                      "New recoding ${records.length - i}"),
+                                      "Your new file ${records.length - i}"),
                                   subtitle: Text(getDateFromFile(
                                       filePath: records.elementAt(i))),
                                   onExpansionChanged: ((newState) {
@@ -223,35 +224,101 @@ class _HomePageState extends State<HomePage> {
                           },
                         );
                       }),
-              bottomNavigationBar: BottomNavigationBar(
-                backgroundColor: kPrimaryColor,
-                currentIndex: 1,
-                items: [
-                  BottomNavigationBarItem(
-                    label: "Upload to cloud",
-                    icon: IconButton(
-                        onPressed: () async {
-                          setState(() {
-                            isUploading = true;
-                          });
-                          for (int f = 0; f < records.length; f++) {
-                            try {
-                              await UploadFile(records.elementAt(f).toString());
-                            } on FirebaseException catch (e) {
-                              print(e.toString());
-                              setState(() {
-                                isUploading = false;
-                              });
-                            }
-                          }
-                          setState(() {
-                            isUploading = false;
-                          });
-                        },
-                        icon: Icon(Icons.cloud_upload)),
+              bottomNavigationBar: ConvexButton.fab(
+                onTap: () async {
+                  await recorder.toggleRecorder();
+                  setState(() {});
+                },
+                icon: isRecording ? Icons.mic_rounded : Icons.mic_off_rounded,
+              ),
+              floatingActionButton: Stack(
+                children: [
+                  Positioned(
+                    left: 10,
+                    bottom: 10,
+                    child: FloatingActionButton.extended(
+                      backgroundColor: Colors.redAccent,
+                      icon: Icon(Icons.home_outlined),
+                      label: Text("HOME"),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomePage(),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                  BottomNavigationBarItem(
-                    label: "HOME",
+                  Positioned(
+                    right: 10,
+                    bottom: 10,
+                    child: FloatingActionButton.extended(
+                      backgroundColor: Colors.redAccent,
+                      label: Text("Upload"),
+                      onPressed: () async {
+                        setState(() {
+                          isUploading = true;
+                        });
+                        for (int f = 0; f < records.length; f++) {
+                          try {
+                            await UploadFile(records.elementAt(f).toString());
+                          } on FirebaseException catch (e) {
+                            print(e.toString());
+                            setState(() {
+                              isUploading = false;
+                            });
+                          }
+                        }
+                        setState(() {
+                          isUploading = false;
+                        });
+                      },
+                      icon: Icon(
+                        Icons.cloud_upload_outlined,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+              /* ConvexAppBar(
+                
+                elevation: 8.0,
+                height: 60,
+                backgroundColor: kPrimaryColor,
+                initialActiveIndex: 1,
+                items: [
+                  TabItem(
+                    // label: "UPload File",
+                    icon: IconButton(
+                      onPressed: () async {
+                        setState(() {
+                          isUploading = true;
+                        });
+                        for (int f = 0; f < records.length; f++) {
+                          try {
+                            await UploadFile(records.elementAt(f).toString());
+                          } on FirebaseException catch (e) {
+                            print(e.toString());
+                            setState(() {
+                              isUploading = false;
+                            });
+                          }
+                        }
+                        setState(() {
+                          isUploading = false;
+                        });
+                      },
+                      icon: Icon(
+                        Icons.cloud_upload,
+                        size: 40,
+                      ),
+                    ),
+                  ),
+                  TabItem(
+                    // label: "HOME",
                     icon: IconButton(
                       onPressed: () {
                         Navigator.pushReplacement(
@@ -261,23 +328,32 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       },
-                      icon: Icon(Icons.home_outlined),
+                      icon: Icon(
+                        Icons.home_outlined,
+                        size: 40,
+                      ),
                     ),
                   ),
-                  BottomNavigationBarItem(
-                    label: isRecording ? "Close MIC" : "Open MIC",
+                  TabItem(
+                    // label: isRecording ? "Close MIC" : "Open MIC",
                     icon: IconButton(
                       onPressed: () async {
                         await recorder.toggleRecorder();
                         setState(() {});
                       },
                       icon: isRecording
-                          ? Icon(Icons.mic_rounded)
-                          : Icon(Icons.mic_off_rounded),
+                          ? Icon(
+                              Icons.mic_rounded,
+                              size: 40,
+                            )
+                          : Icon(
+                              Icons.mic_off_rounded,
+                              size: 40,
+                            ),
                     ),
-                  )
+                  ),
                 ],
-              ),
+              ), */
             ),
     );
   }

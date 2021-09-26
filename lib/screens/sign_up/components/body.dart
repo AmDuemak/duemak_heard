@@ -109,7 +109,7 @@ class _BodyState extends State<Body> {
                                     .sendEmailVerification();
 
                                 await userSetup(fname, lname, userName, phone);
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => HomePage(),
@@ -417,7 +417,7 @@ class _BodyState extends State<Body> {
         labelText: "Username",
         hintText: "Enter your Unique username",
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User Icon.svg"),
+        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
       ),
     );
   }

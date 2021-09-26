@@ -39,10 +39,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: Container(
+          height: size.height,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -77,7 +79,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
                 Container(
-                  height: 600.0,
+                  height: size.height * 0.8,
                   child: PageView(
                     physics: ClampingScrollPhysics(),
                     controller: _pageController,
@@ -95,8 +97,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             Center(
                               child: SvgPicture.asset(
                                 "assets/images/svgs/undraw_Listening_re_c2w0.svg",
-                                height: 300,
-                                width: 300,
+                                height: size.height * 0.4,
+                                width: size.width * 0.9,
                               ),
                             ),
                             SizedBox(height: 30.0),
@@ -120,8 +122,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             Center(
                               child: SvgPicture.asset(
                                 "assets/images/svgs/undraw_Podcast_audience_re_4i5q.svg",
-                                height: 300,
-                                width: 300,
+                                height: size.height * 0.4,
+                                width: size.width * 0.9,
                               ),
                             ),
                             SizedBox(height: 30.0),
@@ -145,8 +147,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             Center(
                               child: SvgPicture.asset(
                                 "assets/images/svgs/undraw_cloud_files_wmo8.svg",
-                                height: 300,
-                                width: 300,
+                                height: size.height * 0.4,
+                                width: size.width * 0.9,
                               ),
                             ),
                             SizedBox(height: 30.0),
@@ -170,8 +172,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             Center(
                               child: SvgPicture.asset(
                                 "assets/images/svgs/undraw_Video_streaming_re_v3qg.svg",
-                                height: 300,
-                                width: 300,
+                                height: size.height * 0.5,
+                                width: size.width * 0.8,
                               ),
                             ),
                             SizedBox(height: 30.0),
@@ -236,11 +238,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
       bottomSheet: _currentPage == _numPages - 1
           ? Container(
-              height: 100.0,
+              height: size.height * 0.15,
               width: double.infinity,
               color: Colors.white,
               child: GestureDetector(
-                onTap: () => Navigator.push(
+                onTap: () => Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => SignInScreen(),
