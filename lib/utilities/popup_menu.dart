@@ -12,20 +12,20 @@ class ThePopupMneu extends StatelessWidget {
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         const PopupMenuItem(
           child: ListTile(
-            leading: Icon(Icons.add),
-            title: Text('Item 1'),
+            leading: Icon(Icons.settings_outlined),
+            title: Text('Settings'),
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           child: ListTile(
             leading: Icon(Icons.delete_forever),
-            title: Text('Delete file'),
+            title: Text('Delete offline files'),
           ),
         ),
         const PopupMenuItem(
           child: ListTile(
             leading: Icon(Icons.help),
-            title: Text('Help'),
+            title: Text('Help & feedback'),
           ),
         ),
       ],

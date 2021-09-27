@@ -124,23 +124,6 @@ class _HomePageState extends State<HomePage> {
                                     color: kSecondaryColor,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: ExpansionTile(
-                                  leading: IconButton(
-                                    onPressed: () async {
-                                      try {
-                                        await deleteFile(
-                                          File(records.elementAt(i)),
-                                          context,
-                                        );
-                                      } catch (e) {
-                                        print(e.toString());
-                                        print(records.elementAt(i));
-                                      }
-                                      setState(() {
-                                        ;
-                                      });
-                                    },
-                                    icon: Icon(Icons.delete_forever),
-                                  ),
                                   title: Text(
                                       "Your new file ${records.length - i}"),
                                   subtitle: Text(getDateFromFile(
@@ -172,47 +155,49 @@ class _HomePageState extends State<HomePage> {
                                                 ? _completedPercentage
                                                 : 0.0,
                                           ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              SizedBox(
-                                                child: IconButton(
-                                                    iconSize: 30,
-                                                    icon: Icon(Icons.stop),
+                                          SizedBox(
+                                            height: 60,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                SizedBox(
+                                                  height: 20,
+                                                  child: IconButton(
                                                     onPressed: () async {
-                                                      await AudioPlayer()
-                                                          .stop();
+                                                      try {
+                                                        await deleteFile(
+                                                          File(records
+                                                              .elementAt(i)),
+                                                          context,
+                                                        );
+                                                      } catch (e) {
+                                                        print(e.toString());
+                                                        print(records
+                                                            .elementAt(i));
+                                                      }
                                                       setState(() {
-                                                        _isPlaying = false;
-                                                        _completedPercentage =
-                                                            0.0;
+                                                        ;
                                                       });
-                                                    }),
-                                              ),
-                                              SizedBox(
-                                                child: IconButton(
-                                                  iconSize: 30,
-                                                  icon: Icon(Icons.play_arrow),
-                                                  onPressed: () => _onPlay(
-                                                      filePath:
-                                                          records.elementAt(i),
-                                                      index: i),
+                                                    },
+                                                    icon: Icon(
+                                                        Icons.delete_forever),
+                                                  ),
                                                 ),
-                                              ),
-                                              SizedBox(
-                                                child: IconButton(
+                                                SizedBox(
+                                                  child: IconButton(
                                                     iconSize: 30,
-                                                    icon: Icon(Icons.pause),
-                                                    onPressed: () async {
-                                                      await AudioPlayer()
-                                                          .pause();
-                                                      setState(() {
-                                                        _isPlaying = false;
-                                                      });
-                                                    }),
-                                              ),
-                                            ],
+                                                    icon:
+                                                        Icon(Icons.play_arrow),
+                                                    onPressed: () => _onPlay(
+                                                        filePath: records
+                                                            .elementAt(i),
+                                                        index: i),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -283,77 +268,6 @@ class _HomePageState extends State<HomePage> {
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerDocked,
-              /* ConvexAppBar(
-                
-                elevation: 8.0,
-                height: 60,
-                backgroundColor: kPrimaryColor,
-                initialActiveIndex: 1,
-                items: [
-                  TabItem(
-                    // label: "UPload File",
-                    icon: IconButton(
-                      onPressed: () async {
-                        setState(() {
-                          isUploading = true;
-                        });
-                        for (int f = 0; f < records.length; f++) {
-                          try {
-                            await UploadFile(records.elementAt(f).toString());
-                          } on FirebaseException catch (e) {
-                            print(e.toString());
-                            setState(() {
-                              isUploading = false;
-                            });
-                          }
-                        }
-                        setState(() {
-                          isUploading = false;
-                        });
-                      },
-                      icon: Icon(
-                        Icons.cloud_upload,
-                        size: 40,
-                      ),
-                    ),
-                  ),
-                  TabItem(
-                    // label: "HOME",
-                    icon: IconButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HomePage(),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.home_outlined,
-                        size: 40,
-                      ),
-                    ),
-                  ),
-                  TabItem(
-                    // label: isRecording ? "Close MIC" : "Open MIC",
-                    icon: IconButton(
-                      onPressed: () async {
-                        await recorder.toggleRecorder();
-                        setState(() {});
-                      },
-                      icon: isRecording
-                          ? Icon(
-                              Icons.mic_rounded,
-                              size: 40,
-                            )
-                          : Icon(
-                              Icons.mic_off_rounded,
-                              size: 40,
-                            ),
-                    ),
-                  ),
-                ],
-              ), */
             ),
     );
   }

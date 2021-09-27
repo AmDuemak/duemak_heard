@@ -186,6 +186,7 @@ class _MyDrawerState extends State<MyDrawer> {
                                 } catch (e) {
                                   print(e.toString());
                                 }
+                                dispose();
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
