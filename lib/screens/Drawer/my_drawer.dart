@@ -114,7 +114,7 @@ class _MyDrawerState extends State<MyDrawer> {
                               );
                             },
                             title: Text(
-                              'Synced Data',
+                              'Backedup Data',
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -122,7 +122,7 @@ class _MyDrawerState extends State<MyDrawer> {
                             ),
                             trailing: Icon(Icons.chevron_right_rounded),
                             leading: Icon(
-                              FontAwesomeIcons.lockOpen,
+                              FontAwesomeIcons.cloudDownloadAlt,
                               color: Colors.black,
                             ),
                           ),
